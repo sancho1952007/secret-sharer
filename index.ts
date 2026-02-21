@@ -33,17 +33,26 @@ const datas: {
     [key: string]: {
         [key: string]: number | string
     }
-} = {
-    pd9G5H: {
-        v: 1,
-        i: 210000,
-        s: "iaZm6zH9//oKtzz6iIClcg==",
-        iv: "xJO4Pw0bd2kpLKXF",
-        d: "V5xEIsxwcK/tON+pV4xun5W6AJ3pSbVkdzai",
-    },
-};
+} = {};
 
-Bun.serve({
+// Note: rate limit & banned ips will be reset to blank once server is restarted
+let RateLimits: {
+    [key: string]: number
+} = {};
+
+let BannedIPs: string[] = [];
+
+// Clear the rate limit list every minute
+setInterval(() => {
+    RateLimits = {};
+}, 60000);
+
+// Clear the banned ip list every 24 hours
+setInterval(() => {
+    RateLimits = {};
+}, 86400);
+
+const server: Bun.Server<unknown> = Bun.serve({
     routes: {
         '/': HomePage,
         '/create': CreatePage,
@@ -55,6 +64,34 @@ Bun.serve({
         '/lib/decrypt.js': file(path.join(__dirname, 'public', 'lib', 'decrypt.js')),
     },
     async fetch(req) {
+        if (req.method === 'POST') {
+            const ip_address = server.requestIP(req)?.address;
+
+            // Check if IP address is present
+            if (ip_address) {
+                // Check if IP is banned
+                if (BannedIPs.includes(ip_address)) {
+                    return new Response(JSON.stringify({ success: false, error: 'Your IP has been banned!' }));
+                }
+
+                // Check if ip present in rate limit list
+                const currRateLimit = RateLimits[ip_address];
+                if (currRateLimit) {
+                    RateLimits[ip_address]!++;
+
+                    // Make sure IP doesn't cross rate limit
+                    if (currRateLimit < 9) {
+                    } else {
+                        console.log(`IP Banned: ${ip_address}`);
+                        BannedIPs.push(ip_address);
+                    }
+                } else {
+                    RateLimits[ip_address] = 1;
+                }
+            }
+        }
+
+
         const url = new URL(req.url);
         if (url.pathname === '/api/create' && req.method === 'POST') {
             try {
