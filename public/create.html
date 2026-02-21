@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a secret</title>
+    <link rel="stylesheet" href="./css/create.css">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=abeezee:400" rel="stylesheet" />
+    <script src="./lib/encrypt.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+        integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Make sure to not cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+</head>
+
+<body>
+    <a href="/" class="header">
+        Secret Sharer
+    </a>
+
+    <div class="container">
+        <br />
+
+        <label for="password">Password: (⚠️ Remember This)</label><br />
+        <input id="password" class="input" placeholder="my-super-secret-password" style="margin-bottom:20px;"
+            type="password">
+
+        <label for="content">Content:</label>
+        <textarea type="text" id="content" class="input content" placeholder="my-super-secret-content"
+            maxlength="20000"></textarea>
+
+        <button class="btn">Create Secret</button>
+
+    </div>
+
+    <div class="result-container">
+        <label>Access ID:</label>
+        <input type="text" class="input" id="access-id" style="margin-bottom:20px;" disabled>
+        <label>Access Link:</label>
+        <input type="text" class="input" id="access-id-link" style="margin-bottom:20px;" disabled>
+        <label>Access QR Code:</label>
+        <div id="qrcode" style="width:100vw;"></div>
+        <button class="btn copy-btn" style="margin-top:5px;">Copy URL</button>
+        <button class="btn share-btn" style="margin-top:5px;">Share</button>
+    </div>
+</body>
+
+<script>
+    // Private function
+    (() => {
+        document.querySelector('.btn').addEventListener('click', async (e) => {
+            e.currentTarget.disabled = true;
+            const password = document.querySelector('#password').value;
+            const content = document.querySelector('#content').value;
+            const mainContainer = document.querySelector('.container');
+            const resultContainer = document.querySelector('.result-container');
+            const accessIDInput = document.querySelector('#access-id');
+            const accessIDLinkInput = document.querySelector('#access-id-link');
+
+            fetch('/api/create', {
+                method: 'POST',
+                body: await encrypt(content, password),
+            }).then(res => res.json()).then(data => {
+                if (data.success) {
+                    mainContainer.style.display = 'none';
+                    resultContainer.style.display = 'flex';
+                    accessIDInput.value = data.accessID;
+                    link = `${window.location.protocol}//${window.location.host}/retrive?access_id=${data.accessID}`;
+                    accessIDLinkInput.value = link;
+
+                    new QRCode(document.getElementById("qrcode"), {
+                        text: link,
+                        width: 200,
+                        height: 200,
+                    });
+                } else {
+                    alert('Failed to encrypt: ' + (data.error || 'Something went wrong!'));
+                }
+            }).catch((e) => {
+                console.error(e);
+                console.log('Failed to send request!');
+            });
+        });
+
+        document.querySelector('.copy-btn').addEventListener('click', () => {
+            const accessIDLinkInput = document.querySelector('#access-id-link');
+            navigator.clipboard.writeText(accessIDLinkInput.value);
+            alert('Copied to clipboard!');
+        });
+
+        console.log(navigator.canShare())
+        if (!navigator.canShare()) {
+            document.querySelector('.share-btn').style.display = 'none';
+        }
+
+        document.querySelector('.share-btn').addEventListener('click', () => {
+            const accessIDLinkInput = document.querySelector('#access-id-link');
+            navigator.share(accessIDLinkInput.value);
+        });
+    })();
+</script>
+
+</html>

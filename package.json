@@ -1,0 +1,17 @@
+{
+  "name": "secret-share",
+  "module": "index.ts",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch index",
+    "build": "bun build --compile ./index.ts --outfile dist/bin",
+    "start": "dist/bin"
+  },
+  "type": "module"
+}
