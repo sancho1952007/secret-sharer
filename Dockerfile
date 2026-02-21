@@ -14,18 +14,17 @@ COPY index.ts ./
 COPY public/ ./public/
 
 # Build the server into a single executable binary
-RUN bun build ./index.ts --bundle --compile --outfile ./server
+RUN bun build ./index.ts --bundle --minify --compile --outfile ./server
 
 
 
 
-# Stage 2: Tiny Debian‑based runtime
-FROM bitnami/minideb:latest
+# Stage 2: Run the executable
+FROM gcr.io/distroless/base-debian11
 
 WORKDIR /app
 
 COPY --from=build /app/server /app/server
-RUN chmod +x /app/server
 
 EXPOSE 3000
 
