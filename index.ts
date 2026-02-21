@@ -154,7 +154,8 @@ const server: Bun.Server<unknown> = Bun.serve({
 
         return new Response('NOT FOUND!');
     },
-    port: 3000
+    port: 3000,
+    reusePort: true
 });
 
 console.log('Secret Sharer started on port 3000!');
