@@ -18,7 +18,6 @@ This tool uses various techniques to safegard your data like:
 
 TLDR; Everything is stored in the memory in an encrypted form. This means that even if somehow (almost impossible) if your memory is dumped at a physical/administrator level, your data is still practically impossible to crack due to the sheer amount of encryption layers and algorithms. Along with that, this tool is absolutely simple to setup as well as it doesn't require any configuration.
 
-
 ## Self hosting
 NOTE: When self hosting keep in mind that once the server stops, all data is lost. This means that if suppose you make an update, all data shall be lost to blank. This is because no persistent storage is used.
 
@@ -33,3 +32,7 @@ cd secret-sharer
 bun install --production
 bun index.ts
 ```
+
+
+## Things to keep in mind
+- There is a rate limit of 10 requests per minute (only for POST requests i.e. creating or accessing a secret) crossing which would ban your IP for 24 hours.
