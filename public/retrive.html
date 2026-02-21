@@ -44,7 +44,6 @@
     const decryptedContent = document.querySelector('#decrypted-content');
     const searchParams = new URLSearchParams(window.location.search);
 
-    console.log(searchParams.has('access_id'));
     if (searchParams.has('access_id')) {
         accessID_input.value = searchParams.get('access_id');
     }
