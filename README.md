@@ -25,16 +25,11 @@ NOTE: When self hosting keep in mind that once the server stops, all data is los
 ### Binary (Recommended)
 This is the easiest & most optimized way to use this tool. This doesn't require anything to be installed beforehand. All you need is to head over to the release section, download the binary that suits your platform & run it.
 
-### Docker
-Requirement: Git, Docker
-
-A Dockerfile is present to make using it on Docker platform easier. It can be easily deployed on platforms like Dokploy as well.
-
 ### Bun
 Requirement: Git, Bun
 ```
 git clone https://github.com/sancho1952007/secret-sharer
 cd secret-sharer
 bun install --production
-bun start
+bun index.ts
 ```
