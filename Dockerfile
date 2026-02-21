@@ -1,35 +1,36 @@
-# Stage 1: Build and compile the Bun server
-FROM oven/bun:1-alpine AS build
+# Stage 1: Build using the official Bun image
+FROM oven/bun:1 AS build
 
 WORKDIR /app
 
-# Copy dependencies first
+# Copy lock and manifest first
 COPY bun.lock package.json ./
 
-# Install dependencies
+# Install dependencies (frozen lockfile)
 RUN bun install --frozen-lockfile
 
-# Copy the server file (no src folder)
+# Copy your server and public files
 COPY index.ts ./
 COPY public/ ./public/
 
-# Compile the server into a standalone binary
+# Build the server into a single executable binary
 RUN bun build ./index.ts --compile --outfile ./server
 
 
 
-# Stage 2: Runtime image with only the binary
-FROM alpine:3.20
+
+# Stage 2: Runtime image (Debian slim, glibc‑compatible)
+FROM debian:bookworm-slim
 
 WORKDIR /app
 
-# Copy the compiled binary
+# Copy the compiled binary from the build stage
 COPY --from=build /app/server /app/server
 
-# Make it executable
+# Make the binary executable
 RUN chmod +x /app/server
 
-# Expose app
+# Expose app port
 EXPOSE 3000
 
 # Run the binary
