@@ -19,19 +19,14 @@ RUN bun build ./index.ts --bundle --compile --outfile ./server
 
 
 
-# Stage 2: Runtime image (Debian slim, glibc‑compatible)
-FROM debian:bookworm-slim
+# Stage 2: Tiny Debian‑based runtime
+FROM bitnami/minideb:latest
 
 WORKDIR /app
 
-# Copy the compiled binary from the build stage
 COPY --from=build /app/server /app/server
-
-# Make the binary executable
 RUN chmod +x /app/server
 
-# Expose app port
 EXPOSE 3000
 
-# Run the binary
 ENTRYPOINT ["/app/server"]
