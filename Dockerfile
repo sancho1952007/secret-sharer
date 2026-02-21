@@ -14,7 +14,7 @@ COPY index.ts ./
 COPY public/ ./public/
 
 # Build the server into a single executable binary
-RUN bun build ./index.ts --compile --outfile ./server
+RUN bun build ./index.ts --bundle --compile --outfile ./server
 
 
 

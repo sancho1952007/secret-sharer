@@ -10,7 +10,7 @@
   "private": true,
   "scripts": {
     "dev": "bun --watch index",
-    "build": "bun build --compile ./index.ts --outfile dist/bin",
+    "build": "bun build --bundle --minify --compile ./index.ts --outfile dist/bin",
     "start": "dist/bin"
   },
   "type": "module"
