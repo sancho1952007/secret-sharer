@@ -11,6 +11,7 @@ RUN bun install --frozen-lockfile
 
 # Copy the server file (no src folder)
 COPY index.ts ./
+COPY public/ ./public/
 
 # Compile the server into a standalone binary
 RUN bun build ./index.ts --compile --outfile ./server
