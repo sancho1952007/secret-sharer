@@ -5,7 +5,7 @@ This is a very simple & lightweight secret sharing tool focused on maximum secur
 [What's the purpose?](#whats-the-purpose)  
 [Why should I use this?](#why-should-i-use-this)  
 [Self hosting](#self-hosting)  
-[Things to keep in mind](#things-to-keep-in-mind)  
+[Things to keep in mind](#optional-environment-variables)  
 [Tech Stack](#tech-stack)  
 
 ## What's the purpose?
@@ -19,7 +19,7 @@ This tool uses various techniques to safegard your data like:
 - Zero knowledge about content: The server doesn't know what you're storing.
 - Zero persistent storage: No data is stored persistent. All data is stored in memory protecting from hypervisor level attacks.
 - Extremely lightweight: Can be used easily even on a 512MB RAM server!
-- Zero config: There is no configuration required at all to run this. No environment variables, no cli arguments, nothing!
+- Zero config: There is no configuration required at all by default to run this. No environment variables, no cli arguments, nothing!
 - No 3rd party stuff: There is no 3rd party dependencies on the server which improves security massively from supply-chain attacks.
 - Operations happen client-side: All the encryption and decryption happens client-side. This improves security massively since no one can read your secret during transmission to the server.
 
@@ -44,9 +44,14 @@ NODE_ENV=production bun index.ts
 A Dockerfile has been included to run this tool on Docker.
 
 
-## Things to keep in mind
-- There is a rate limit of 7 requests per minute (only for POST requests i.e. creating or accessing a secret) crossing which would ban your IP for 24 hours.
+## Optional Environment Variables:
+| NAME | default | purpose |
+| ----- | ----- | ------ |
+| ENABLE_RATE_LIMIT| false | This enables the rate limiter.<br/><br/>⚠️ Note, this will only work if you are proxying the website via Cloudflare.
+| RATE_LIMIT | 7 | This is the number of requests you want to allow per minute. |
+| RATE_LIMIT_BAN_PERIOD | 1440 | The amount of time (in minutes) you want to ban an IP address if they cross the rate limit. The default (1440) is 24 hours. |
 
+NOTE: Rate limit only applies to POST requests (i.e. Create or Access a secret). It doesn't include those requests that are just for accessing the frontend.
 
 ## Tech Stack
 I've choosen an extremely simple tech stack for this project.

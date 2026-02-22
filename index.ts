@@ -5,6 +5,13 @@ import HomePage from './public/index.html';
 import CreatePage from './public/create.html';
 import RetrivePage from './public/retrive.html';
 
+// Enable rate limiter only if enabled by user
+const ENABLE_RATE_LIMIT = Bun.env.ENABLE_RATE_LIMIT as unknown as boolean;
+// Use the rate limit supplied by env variable or set it default to 7 requests per minute
+const RATE_LIMIT = Bun.env.RATE_LIMIT ? (Bun.env.RATE_LIMIT as unknown as number) - 1 : 6;
+// Use the rate limit ban period supplied by env variable or use default of 24 hours
+const RATE_LIMIT_BAN_PERIOD = Bun.env.RATE_LIMIT_BAN_PERIOD as unknown as number || 1440;
+
 function generateRandomID() {
     const allowerCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -40,17 +47,12 @@ let RateLimits: {
     [key: string]: number
 } = {};
 
-let BannedIPs: string[] = [];
+let BannedIPs = new Set();
 
 // Clear the rate limit list every minute
 setInterval(() => {
     RateLimits = {};
 }, 60000);
-
-// Clear the banned ip list every 24 hours
-setInterval(() => {
-    RateLimits = {};
-}, 86400);
 
 const server: Bun.Server<unknown> = Bun.serve({
     routes: {
@@ -66,12 +68,17 @@ const server: Bun.Server<unknown> = Bun.serve({
     },
     async fetch(req) {
         if (req.method === 'POST') {
-            const ip_address = server.requestIP(req)?.address;
+            let ip_address = null;
+
+            // Use rate limited only if it's enabled & behind cloudflare
+            if (ENABLE_RATE_LIMIT) {
+                ip_address = req.headers.get('cf-connecting-ip');
+            }
 
             // Check if IP address is present
             if (ip_address) {
                 // Check if IP is banned
-                if (BannedIPs.includes(ip_address)) {
+                if (BannedIPs.has(ip_address)) {
                     return new Response(JSON.stringify({ success: false, error: 'Your IP has been banned!' }));
                 }
 
@@ -81,17 +88,19 @@ const server: Bun.Server<unknown> = Bun.serve({
                     RateLimits[ip_address]!++;
 
                     // Make sure IP doesn't cross rate limit
-                    if (currRateLimit < 6) {
-                    } else {
+                    if (currRateLimit > RATE_LIMIT) {
                         console.log(`IP Banned: ${ip_address}`);
-                        BannedIPs.push(ip_address);
+                        BannedIPs.add(ip_address);
+
+                        setTimeout(() => {
+                            BannedIPs.delete(ip_address);
+                        }, RATE_LIMIT_BAN_PERIOD * 60 * 1000); // minutes -> ms 
                     }
                 } else {
                     RateLimits[ip_address] = 1;
                 }
             }
         }
-
 
         const url = new URL(req.url);
         if (url.pathname === '/api/create' && req.method === 'POST') {
