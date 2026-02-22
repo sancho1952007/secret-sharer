@@ -62,6 +62,7 @@ const server: Bun.Server<unknown> = Bun.serve({
         '/css/retrive.css': file(path.join(__dirname, 'public', 'css', 'retrive.css')),
         '/lib/encrypt.js': file(path.join(__dirname, 'public', 'lib', 'encrypt.js')),
         '/lib/decrypt.js': file(path.join(__dirname, 'public', 'lib', 'decrypt.js')),
+        '/images/view-source-code-badge.svg': file(path.join(__dirname, 'images', 'view-source-code-badge.svg')),
     },
     async fetch(req) {
         if (req.method === 'POST') {
