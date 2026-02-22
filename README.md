@@ -57,7 +57,7 @@ NOTE: Rate limit only applies to POST requests (i.e. Create or Access a secret).
 
 ## Tech Stack
 I've choosen an extremely simple tech stack for this project.
-Frontend: HTML, CSS, JS
+Frontend: HTML, CSS, JS  
 Backend: Bun
 
 There are no 3rd party dependencies used in the backend. For the frontend, I used 2 3rd party dependencies.
