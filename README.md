@@ -33,6 +33,9 @@ bun install --production
 bun index.ts
 ```
 
+### Docker
+A Dockerfile has been included to run this tool on Docker.
+
 
 ## Things to keep in mind
 - There is a rate limit of 10 requests per minute (only for POST requests i.e. creating or accessing a secret) crossing which would ban your IP for 24 hours.
