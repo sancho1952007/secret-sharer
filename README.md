@@ -1,7 +1,14 @@
 # Secret Sharer
 This is a very simple & lightweight secret sharing tool focused on maximum security when sharing secrets.
 
-## What's the purpose
+### Contents
+[What's the purpose?](#whats-the-purpose)  
+[Why should I use this?](#why-should-i-use-this)  
+[Self hosting](#self-hosting)  
+[Things to keep in mind](#things-to-keep-in-mind)  
+[Tech Stack](#tech-stack)  
+
+## What's the purpose?
 Until now I haven't found a reliable way to share secrets like passwords, environment variables, 2FA backup codes, etc. There's always a big concern of privacy that your secrets may get leaked. Big tech has been logging everything, even a CTRL + V that you do. Tired of all this, I decided to create my own very secure secret sharing tool that I can use to share secrets to anyone extremely trustingly & reliably.
 
 ## Why should I use this?
@@ -39,3 +46,15 @@ A Dockerfile has been included to run this tool on Docker.
 
 ## Things to keep in mind
 - There is a rate limit of 10 requests per minute (only for POST requests i.e. creating or accessing a secret) crossing which would ban your IP for 24 hours.
+
+
+## Tech Stack
+I've choosen an extremely simple tech stack for this project.
+Frontend: HTML, CSS, JS
+Backend: Bun
+
+There are no 3rd party dependencies used in the backend. For the frontend, I used 2 3rd party dependencies.
+1. Bunny fonts for font.
+2. Qrcode.js to generate the QR code on the create page.
+
+Rest assured, these are two very popular and secure dependencies.
