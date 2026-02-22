@@ -81,7 +81,7 @@ const server: Bun.Server<unknown> = Bun.serve({
                     RateLimits[ip_address]!++;
 
                     // Make sure IP doesn't cross rate limit
-                    if (currRateLimit < 9) {
+                    if (currRateLimit < 6) {
                     } else {
                         console.log(`IP Banned: ${ip_address}`);
                         BannedIPs.push(ip_address);
