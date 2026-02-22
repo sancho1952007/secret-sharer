@@ -101,8 +101,19 @@ const server: Bun.Server<unknown> = Bun.serve({
                 const isValid =
                     test &&
                     typeof test === 'object' &&
-                    Object.keys(test).length === 5 &&
+                    Object.keys(test).length === 7 &&
 
+                    /* General params releated */
+                    // Check one_time parameter's value format
+                    typeof test.one_time === 'boolean' &&
+
+                    // Check expiry time
+                    typeof test.expiry === 'number' &&
+                    Number.isFinite(test.expiry) &&
+                    test.expiry > 0 &&
+                    test.expiry < 241 &&
+
+                    /* Encryption related */
                     // version check
                     test.v === 1 &&
 
@@ -129,6 +140,11 @@ const server: Bun.Server<unknown> = Bun.serve({
                 if (isValid) {
                     const accessID = generateRandomID();
                     datas[accessID] = test;
+
+                    setTimeout(() => {
+                        delete datas[accessID];
+                    }, 60000 * test.expiry);
+
                     return new Response(JSON.stringify({ success: true, accessID }));
                 } else {
                     return new Response(JSON.stringify({ success: false, error: 'Failed to validate!' }));
@@ -143,9 +159,14 @@ const server: Bun.Server<unknown> = Bun.serve({
             if (body && body.accessID.trim().length == 6) {
                 const data = datas[body.accessID];
                 if (data) {
+                    // Delete it if it's one time secret
+                    if (data.one_time) {
+                        delete datas[body.accessID];
+                    }
+
                     return new Response(JSON.stringify({ success: true, encrypted: JSON.stringify(data) }));
                 } else {
-                    return new Response(JSON.stringify({ success: false, error: 'Incorrect access id!' }));
+                    return new Response(JSON.stringify({ success: false, error: 'Incorrect/Expired access id!' }));
                 }
             } else {
                 return new Response(JSON.stringify({ success: false, error: 'Missing/Incorrect body!' }));

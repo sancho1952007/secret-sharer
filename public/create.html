@@ -35,8 +35,16 @@
         <textarea type="text" id="content" class="input content" placeholder="my-super-secret-content"
             maxlength="20000"></textarea>
 
-        <button class="btn">Create Secret</button>
+        <label for="one-time-secret">One Time Secret:</label>
+        <input type="checkbox" name="" id="one-time-secret" style="margin-bottom:10px;">
 
+        <br />
+
+        <label for="auto-expire">Auto expire (in minutes, upto 240 for 24 hours):</label>
+        <!-- Limit to max 240 minutes i.e. 24 hours -->
+        <input type="number" min="1" name="" id="auto-expire" class="input" value="60" onkeyup="validateExpiry(event)">
+
+        <button class="btn" style="margin-top:5px;margin-bottom:10px;">Create Secret</button>
     </div>
 
     <div class="result-container">
@@ -52,6 +60,17 @@
 </body>
 
 <script>
+    const validateExpiry = (e) => {
+        // Make sure expiry is in range
+        if (parseInt(e.currentTarget.value) > 240) {
+            e.currentTarget.value = e.currentTarget.value.slice(0, -1);
+            alert('Maximum 240 minutes (24 hours) is supported!');
+        } else if (parseInt(e.currentTarget.value) < 1) {
+            e.currentTarget.value = 1;
+            alert('Minimum of 1 minute is required!');
+        }
+    }
+
     // Private function
     (() => {
         document.querySelector('.btn').addEventListener('click', async (e) => {
@@ -62,10 +81,15 @@
             const resultContainer = document.querySelector('.result-container');
             const accessIDInput = document.querySelector('#access-id');
             const accessIDLinkInput = document.querySelector('#access-id-link');
+            const oneTimeSecretInput = document.querySelector('#one-time-secret');
+            const expiryMinutesInput = document.querySelector('#auto-expire');
 
+            const encrypted = await encrypt(content, password);
+            const encryptedParsed = JSON.parse(encrypted);
+            console.log(JSON.stringify({ one_time: oneTimeSecretInput.checked, expiry: parseInt(expiryMinutesInput.value), ...encryptedParsed }))
             fetch('/api/create', {
                 method: 'POST',
-                body: await encrypt(content, password),
+                body: JSON.stringify({ one_time: oneTimeSecretInput.checked, expiry: parseInt(expiryMinutesInput.value), ...encryptedParsed }),
             }).then(res => res.json()).then(data => {
                 if (data.success) {
                     mainContainer.style.display = 'none';
@@ -85,6 +109,8 @@
             }).catch((e) => {
                 console.error(e);
                 console.log('Failed to send request!');
+            }).finally(() => {
+                document.querySelector('.btn').disabled = false;
             });
         });
 
@@ -94,7 +120,6 @@
             alert('Copied to clipboard!');
         });
 
-        console.log(navigator.canShare())
         if (!navigator.canShare()) {
             document.querySelector('.share-btn').style.display = 'none';
         }

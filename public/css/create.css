@@ -45,6 +45,7 @@ label {
     height: calc(100% - 300px);
     resize: none;
     min-height: 300px;
+    margin-bottom: 10px;
 }
 
 .btn {
