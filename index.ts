@@ -66,8 +66,6 @@ const server: Bun.Server<unknown> = Bun.serve({
     },
     async fetch(req) {
         if (req.method === 'POST') {
-            console.log(req.headers);
-
             const ip_address = server.requestIP(req)?.address;
 
             // Check if IP address is present
