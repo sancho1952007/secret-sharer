@@ -74,7 +74,6 @@
     // Private function
     (() => {
         document.querySelector('.btn').addEventListener('click', async (e) => {
-            e.currentTarget.disabled = true;
             const password = document.querySelector('#password').value;
             const content = document.querySelector('#content').value;
             const mainContainer = document.querySelector('.container');
@@ -86,7 +85,18 @@
 
             const encrypted = await encrypt(content, password);
             const encryptedParsed = JSON.parse(encrypted);
-            console.log(JSON.stringify({ one_time: oneTimeSecretInput.checked, expiry: parseInt(expiryMinutesInput.value), ...encryptedParsed }))
+
+            if (password.trim().length < 4) {
+                alert('Password should be at least 4 characters long!');
+                return null;
+            }
+
+            if (content.trim().length < 1) {
+                alert('Please enter some content!');
+                return null;
+            }
+
+            document.querySelector('.btn').disabled = true;
             fetch('/api/create', {
                 method: 'POST',
                 body: JSON.stringify({ one_time: oneTimeSecretInput.checked, expiry: parseInt(expiryMinutesInput.value), ...encryptedParsed }),
