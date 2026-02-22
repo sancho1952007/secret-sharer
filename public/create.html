@@ -105,7 +105,7 @@
                     mainContainer.style.display = 'none';
                     resultContainer.style.display = 'flex';
                     accessIDInput.value = data.accessID;
-                    link = `${window.location.protocol}//${window.location.host}/retrive?access_id=${data.accessID}`;
+                    link = `${window.location.protocol}//${window.location.host}/retrieve?access_id=${data.accessID}`;
                     accessIDLinkInput.value = link;
 
                     new QRCode(document.getElementById("qrcode"), {

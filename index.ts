@@ -3,7 +3,7 @@ import { file } from 'bun';
 
 import HomePage from './public/index.html';
 import CreatePage from './public/create.html';
-import RetrivePage from './public/retrive.html';
+import RetrievePage from './public/retrieve.html';
 
 // Enable rate limiter only if enabled by user
 const ENABLE_RATE_LIMIT = Bun.env.ENABLE_RATE_LIMIT as unknown as boolean;
@@ -58,10 +58,10 @@ const server: Bun.Server<unknown> = Bun.serve({
     routes: {
         '/': HomePage,
         '/create': CreatePage,
-        '/retrive': RetrivePage,
+        '/retrieve': RetrievePage,
         '/css/index.css': file(path.join(__dirname, 'public', 'css', 'index.css')),
         '/css/create.css': file(path.join(__dirname, 'public', 'css', 'create.css')),
-        '/css/retrive.css': file(path.join(__dirname, 'public', 'css', 'retrive.css')),
+        '/css/retrieve.css': file(path.join(__dirname, 'public', 'css', 'retrieve.css')),
         '/lib/encrypt.js': file(path.join(__dirname, 'public', 'lib', 'encrypt.js')),
         '/lib/decrypt.js': file(path.join(__dirname, 'public', 'lib', 'decrypt.js')),
         '/images/view-source-code-badge.svg': file(path.join(__dirname, 'images', 'view-source-code-badge.svg')),
@@ -164,7 +164,7 @@ const server: Bun.Server<unknown> = Bun.serve({
                 console.error(e);
                 return new Response(JSON.stringify({ success: false, error: 'Something went wrong!' }));
             }
-        } else if (url.pathname === '/api/retrive' && req.method === 'POST') {
+        } else if (url.pathname === '/api/retrieve' && req.method === 'POST') {
             const body = await req.body?.json();
             // Validation
             if (body && body.accessID.trim().length == 6) {

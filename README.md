@@ -56,7 +56,7 @@ These environment variables can be passed using either a `.env` file or directly
 NOTE: Rate limit only applies to POST requests (i.e. Create or Access a secret). It doesn't include those requests that are just for accessing the frontend.
 
 ## Tech Stack
-I've choosen an extremely simple tech stack for this project.
+I've choosen an extremely simple tech stack for this project.  
 Frontend: HTML, CSS, JS  
 Backend: Bun
 
