@@ -8,7 +8,7 @@ import RetrivePage from './public/retrive.html';
 // Enable rate limiter only if enabled by user
 const ENABLE_RATE_LIMIT = Bun.env.ENABLE_RATE_LIMIT as unknown as boolean;
 // Use the rate limit supplied by env variable or set it default to 7 requests per minute
-const RATE_LIMIT = Bun.env.RATE_LIMIT ? (Bun.env.RATE_LIMIT as unknown as number) : 7;
+const RATE_LIMIT = Bun.env.RATE_LIMIT ? (Bun.env.RATE_LIMIT as unknown as number) - 2 : 5;
 // Use the rate limit ban period supplied by env variable or use default of 24 hours
 const RATE_LIMIT_BAN_PERIOD = Bun.env.RATE_LIMIT_BAN_PERIOD as unknown as number || 1440;
 
@@ -71,8 +71,8 @@ const server: Bun.Server<unknown> = Bun.serve({
             let ip_address = null;
 
             // Use rate limited only if it's enabled & behind cloudflare
-            if (ENABLE_RATE_LIMIT || true) {
-                ip_address = req.headers.get('cf-connecting-ip') || 'u';
+            if (ENABLE_RATE_LIMIT) {
+                ip_address = req.headers.get('cf-connecting-ip');
             }
 
             // Check if IP address is present
@@ -88,7 +88,7 @@ const server: Bun.Server<unknown> = Bun.serve({
                     RateLimits[ip_address]!++;
 
                     // Make sure IP doesn't cross rate limit
-                    if (currRateLimit >= RATE_LIMIT) {
+                    if (currRateLimit > RATE_LIMIT) {
                         console.log(`IP Banned: ${ip_address}`);
                         BannedIPs.add(ip_address);
 
