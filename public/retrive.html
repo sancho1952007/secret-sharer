@@ -33,55 +33,65 @@
         <div class="decrypted">
             <label for="decrypted-content">Decrypted Content:</label><br />
             <textarea class="input content" id="decrypted-content" disabled></textarea>
+            <div class="btn copy-btn">Copy</div>
         </div>
     </div>
 </body>
 
 <script>
-    const accessID_input = document.querySelector('#accessid');
-    const password = document.querySelector('#password');
-    const decryptedSection = document.querySelector('.decrypted');
-    const decryptedContent = document.querySelector('#decrypted-content');
-    const searchParams = new URLSearchParams(window.location.search);
+    // Private function
+    (() => {
+        const accessID_input = document.querySelector('#accessid');
+        const password = document.querySelector('#password');
+        const decryptedSection = document.querySelector('.decrypted');
+        const decryptedContent = document.querySelector('#decrypted-content');
+        const searchParams = new URLSearchParams(window.location.search);
 
-    if (searchParams.has('access_id')) {
-        accessID_input.value = searchParams.get('access_id');
-    }
+        document.querySelector('.copy-btn').addEventListener('click', () => {
+            const decryptedContent = document.querySelector('#decrypted-content');
+            navigator.clipboard.writeText(decryptedContent.value);
+            alert('Copied to clipboard!');
+        });
 
-    document.querySelector('.retrive').addEventListener('click', () => {
-        if (accessID_input.value.trim().length !== 6) {
-            alert('Please enter Access ID!');
-            return null;
-        } else if (password.value.trim() === '') {
-            alert('Please enter Password!');
-            return null;
+        if (searchParams.has('access_id')) {
+            accessID_input.value = searchParams.get('access_id');
         }
 
-        fetch('/api/retrive', {
-            method: 'POST',
-            body: JSON.stringify({
-                accessID: accessID_input.value
+        document.querySelector('.retrive').addEventListener('click', () => {
+            if (accessID_input.value.trim().length !== 6) {
+                alert('Please enter Access ID!');
+                return null;
+            } else if (password.value.trim() === '') {
+                alert('Please enter Password!');
+                return null;
+            }
+
+            fetch('/api/retrive', {
+                method: 'POST',
+                body: JSON.stringify({
+                    accessID: accessID_input.value
+                })
             })
-        })
-            .then(res => res.json())
-            .then(async data => {
-                if (data.success === true) {
-                    try {
-                        const decrypted = await decrypt(data.encrypted, password.value)
-                        decryptedSection.style.display = 'block';
-                        decryptedContent.value = decrypted;
-                    } catch (err) {
-                        if (err.message === 'Wrong password or corrupted data') {
-                            alert('Incorrect password / corrupted data!');
-                        } else {
-                            alert('An internal error occured!');
+                .then(res => res.json())
+                .then(async data => {
+                    if (data.success === true) {
+                        try {
+                            const decrypted = await decrypt(data.encrypted, password.value)
+                            decryptedSection.style.display = 'block';
+                            decryptedContent.value = decrypted;
+                        } catch (err) {
+                            if (err.message === 'Wrong password or corrupted data') {
+                                alert('Incorrect password / corrupted data!');
+                            } else {
+                                alert('An internal error occured!');
+                            }
                         }
+                    } else {
+                        alert(data.error || 'Something went wrong!');
                     }
-                } else {
-                    alert(data.error || 'Something went wrong!');
-                }
-            });
-    });
+                });
+        });
+    })();
 </script>
 
 </html>
