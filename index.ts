@@ -142,6 +142,7 @@ const server: Bun.Server<unknown> = Bun.serve({
                     const accessID = generateRandomID();
                     datas[accessID] = test;
 
+                    // Set expiry time
                     setTimeout(() => {
                         delete datas[accessID];
                     }, 60000 * test.expiry);
