@@ -71,8 +71,6 @@ label {
 
 .result-container {
     display: none;
-    justify-content: center;
-    flex-direction: column;
 }
 
 * {

@@ -103,7 +103,7 @@
             }).then(res => res.json()).then(data => {
                 if (data.success) {
                     mainContainer.style.display = 'none';
-                    resultContainer.style.display = 'flex';
+                    resultContainer.style.display = 'block';
                     accessIDInput.value = data.accessID;
                     link = `${window.location.protocol}//${window.location.host}/retrieve?access_id=${data.accessID}`;
                     accessIDLinkInput.value = link;
