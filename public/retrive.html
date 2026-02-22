@@ -46,6 +46,7 @@
         const decryptedSection = document.querySelector('.decrypted');
         const decryptedContent = document.querySelector('#decrypted-content');
         const searchParams = new URLSearchParams(window.location.search);
+        let encryptedString = null
 
         document.querySelector('.copy-btn').addEventListener('click', () => {
             const decryptedContent = document.querySelector('#decrypted-content');
@@ -57,7 +58,7 @@
             accessID_input.value = searchParams.get('access_id');
         }
 
-        document.querySelector('.retrive').addEventListener('click', () => {
+        document.querySelector('.retrive').addEventListener('click', async () => {
             if (accessID_input.value.trim().length !== 6) {
                 alert('Please enter Access ID!');
                 return null;
@@ -66,30 +67,35 @@
                 return null;
             }
 
-            fetch('/api/retrive', {
-                method: 'POST',
-                body: JSON.stringify({
-                    accessID: accessID_input.value
+            if (!encryptedString) {
+                fetch('/api/retrive', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        accessID: accessID_input.value
+                    })
                 })
-            })
-                .then(res => res.json())
-                .then(async data => {
-                    if (data.success === true) {
-                        try {
-                            const decrypted = await decrypt(data.encrypted, password.value)
-                            decryptedSection.style.display = 'block';
-                            decryptedContent.value = decrypted;
-                        } catch (err) {
-                            if (err.message === 'Wrong password or corrupted data') {
-                                alert('Incorrect password / corrupted data!');
-                            } else {
-                                alert('An internal error occured!');
-                            }
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success === true) {
+                            encryptedString = data.encrypted;
+                        } else {
+                            alert(data.error || 'Something went wrong!');
                         }
-                    } else {
-                        alert(data.error || 'Something went wrong!');
-                    }
-                });
+                    });
+            }
+
+
+            try {
+                const decrypted = await decrypt(encryptedString, password.value)
+                decryptedSection.style.display = 'block';
+                decryptedContent.value = decrypted;
+            } catch (err) {
+                if (err.message === 'Wrong password or corrupted data') {
+                    alert('Incorrect password / corrupted data!');
+                } else {
+                    alert('An internal error occured!');
+                }
+            }
         });
     })();
 </script>
