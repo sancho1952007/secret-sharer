@@ -23,7 +23,7 @@
 
     <div class="container">
         <label for="accessid">Access ID:</label><br />
-        <input type="text" maxlength="6" class="input" id="accessid" placeholder="xxxxxx" style="margin-bottom:20px;">
+        <input type="text" maxlength="6" class="input" id="accessid" placeholder="------" style="margin-bottom:20px;">
 
         <label for="password">Password:</label><br />
         <input class="input" type="password" id="password" placeholder="my-super-secret-password">
@@ -49,6 +49,14 @@
     }
 
     document.querySelector('.retrive').addEventListener('click', () => {
+        if (accessID_input.value.trim().length !== 6) {
+            alert('Please enter Access ID!');
+            return null;
+        } else if (password.value.trim() === '') {
+            alert('Please enter Password!');
+            return null;
+        }
+
         fetch('/api/retrive', {
             method: 'POST',
             body: JSON.stringify({
@@ -70,7 +78,7 @@
                         }
                     }
                 } else {
-                    alert('Something went wrong: ' + (data.error || 'Unknown'));
+                    alert(data.error || 'Something went wrong!');
                 }
             });
     });
