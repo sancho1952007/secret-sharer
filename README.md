@@ -37,7 +37,7 @@ Requirement: Git, Bun
 git clone https://github.com/sancho1952007/secret-sharer
 cd secret-sharer
 bun install --production
-bun index.ts
+NODE_ENV=production bun index.ts
 ```
 
 ### Docker
