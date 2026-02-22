@@ -5,7 +5,7 @@ This is a very simple & lightweight secret sharing tool focused on maximum secur
 [What's the purpose?](#whats-the-purpose)  
 [Why should I use this?](#why-should-i-use-this)  
 [Self hosting](#self-hosting)  
-[Things to keep in mind](#optional-environment-variables)  
+[Optional Environment Variables](#optional-environment-variables)  
 [Tech Stack](#tech-stack)  
 
 ## What's the purpose?
@@ -50,6 +50,8 @@ A Dockerfile has been included to run this tool on Docker.
 | ENABLE_RATE_LIMIT| false | This enables the rate limiter.<br/><br/>⚠️ Note, this will only work if you are proxying the website via Cloudflare.
 | RATE_LIMIT | 7 | This is the number of requests you want to allow per minute. |
 | RATE_LIMIT_BAN_PERIOD | 1440 | The amount of time (in minutes) you want to ban an IP address if they cross the rate limit. The default (1440) is 24 hours. |
+
+These environment variables can be passed using either a `.env` file or directly setting these variables to the environment.
 
 NOTE: Rate limit only applies to POST requests (i.e. Create or Access a secret). It doesn't include those requests that are just for accessing the frontend.
 
